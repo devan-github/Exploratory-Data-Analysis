@@ -1,0 +1,212 @@
+
+# coding: utf-8
+
+# In[59]:
+
+
+#Import Packages
+
+import pandas as pd
+
+import numpy as np
+
+import seaborn as sns
+
+import matplotlib as plt
+from matplotlib import pyplot as plt
+
+
+# In[19]:
+
+
+df1 = pd.read_csv("/Users/Devan/Desktop/MHE/Datasets/NCHS_-_Death_rates_and_life_expectancy_at_birth.csv")
+#I believe this is only based in the US
+
+
+# In[25]:
+
+
+#Snapshot of data in dataset
+
+df1.head(10)
+
+
+# In[32]:
+
+
+#Delete Blank/NA/NAN Values
+
+df2 = df1.dropna()
+
+
+# In[34]:
+
+
+#Snapshot of data in dataset
+
+df2.head(10)
+
+
+# In[35]:
+
+
+df2.describe()
+
+
+# In[42]:
+
+
+#Create Subset for "All Races" & "Both Sexes"
+
+everyone_df = df2[(df2.Race == "All Races") & (df2.Sex == "Both Sexes")]
+
+everyone_df.head(10)
+
+
+# In[47]:
+
+
+#Create Scatterplot to Show Avergae Life Expectancy by Year
+
+x = everyone_df['Average Life Expectancy (Years)']
+
+y = everyone_df['Year']
+
+plt.scatter(x,y, color='b', label = 'Average Life Expectancy')
+
+
+plt.title('Average Life Expectancy (Years) of Everyone')
+plt.xlabel('Years Old')
+plt.ylabel('Year')
+plt.legend()
+plt.show()
+
+#As you can see, life expectancy steadily increases as time progress.
+#It appears that life expectancy went down in 1918.  I wonder why this occured?  War, disease, etc.?
+
+
+# In[45]:
+
+
+#Create Subset for "Black" & "Both Sexes"
+
+black_df = df2[(df2.Race == "Black") & (df2.Sex == "Both Sexes")]
+
+black_df.head(10)
+
+
+# In[46]:
+
+
+#Create Subset for "White" & "Both Sexes"
+
+white_df = df2[(df2.Race == "White") & (df2.Sex == "Both Sexes")]
+
+white_df.head(10)
+
+
+# In[48]:
+
+
+#Create Scatterplot to Show Avergae Life Expectancy by Year Comparing Black & White Americans
+
+x = black_df['Average Life Expectancy (Years)']
+
+y = black_df['Year']
+
+plt.scatter(x,y, color='r', label = 'Black Average Life Expectancy')
+
+x2 = white_df['Average Life Expectancy (Years)']
+plt.scatter(x2,y, color='b', label = 'White Average Life Expectancy')
+
+plt.title('Life Expectancy by Race')
+plt.xlabel('Years Old')
+plt.ylabel('Year')
+plt.legend()
+plt.show()
+
+#According to the graph white americans live longer on average. 
+#Is this due to genetics, or is there another root cause (e.g. education, income, etc.)
+#Once again 1918 appears as an outlier, this time for white americans. What happened in 1918?
+#1918 marked the beginning of the flu pandemic. 28% of americans were infected, and 500,000 to 675,000 died.
+
+
+# In[52]:
+
+
+#Add Combined Average Life Expectancy to Scatterplot
+
+x = black_df['Average Life Expectancy (Years)']
+
+y = black_df['Year']
+
+plt.scatter(x,y, color='r', label = 'Black Average Life Expectancy')
+
+x2 = white_df['Average Life Expectancy (Years)']
+plt.scatter(x2,y, color='b', label = 'White Average Life Expectancy')
+
+x3 = everyone_df['Average Life Expectancy (Years)']
+plt.scatter(x3,y, color='g', label = 'Combined Average Life Expectancy')
+
+plt.title('Life Expectancy by Race')
+plt.xlabel('Years Old')
+plt.ylabel('Year')
+plt.legend()
+plt.show()
+
+#It appears that the combined average life expectancy is almost a reflection of the white american life expectancy
+#I am going to guess that the white population significantly outnumbered the black populations.
+
+
+# In[ ]:
+
+
+#My data is based on years and averages. As such, I don't have individual counts per population (black, white. etc.)
+#The next 3 graphs aren't a good pair/match for my data, but I just wanted to show the graphs.
+#Let's imagine each year represented a person instead.
+
+
+# In[68]:
+
+
+#Create Kernal Density Estimation (KDE) Graph
+
+sns.distplot(black_df['Average Life Expectancy (Years)'], hist=False,color='red',label='black')
+sns.distplot(white_df['Average Life Expectancy (Years)'], hist=False, color='blue', label='white')
+plt.axvline(linewidth=2, linestyle = '-.', color='red', x=black_df['Average Life Expectancy (Years)'].median())
+plt.axvline(linewidth=2, linestyle = '-.', color='blue', x=white_df['Average Life Expectancy (Years)'].median())
+plt.legend()
+plt.title("Average Life Expectancy KDE Plot", fontsize='20')
+plt.xlabel('Average Life Expectancy (Years)')
+plt.ylabel('Frequency')
+plt.show()
+
+
+# In[79]:
+
+
+#Create Violin Plot
+
+sns.violinplot(black_df['Average Life Expectancy (Years)'], color='red', label='black')
+sns.violinplot(white_df['Average Life Expectancy (Years)'], color='blue', label='white')
+plt.title("Average Life Expectancy \n Violin Plot", fontsize='18') #/n is like hitting "enter" key
+plt.axvline(linewidth=1, linestyle = '-.', color='red', x=black_df['Average Life Expectancy (Years)'].median())
+plt.axvline(linewidth=1, linestyle = '-.', color='blue', x=white_df['Average Life Expectancy (Years)'].median())
+plt.xlabel('Average Life Expectancy (Years)')
+plt.show()
+
+
+# In[76]:
+
+
+#Create Cumulative Distribution Function Plot (CDF)
+
+sns.kdeplot(black_df['Average Life Expectancy (Years)'], cumulative=True, linewidth=4, color='red',label='black')
+sns.kdeplot(white_df['Average Life Expectancy (Years)'], cumulative=True, linewidth=4, color='blue',label='white')
+plt.axvline(linewidth=1, linestyle = '-.', color='green', x=65)
+plt.title("Average Life Expectancy \n CDF Plot", fontsize='16')
+plt.xlabel("Average Life Expectancy (Years)")
+plt.ylabel("Cumulative Percent")
+plt.ylim(0,1.1) #0=min 1.1=max
+plt.show()
+
